@@ -22,14 +22,41 @@ Mailjet.prototype.sendContent = function(from, to, subject, type, content) {
       to = [to];
   var recipients = mail_parser.parse_recipient_type(to);
   // Build the HTTP POST body text
-
-  if (type == 'html') {
+    
+  var query = 'from='+encodeURIComponent(from)+'&subject='+encodeURIComponent(subject);
+    query = query + '&';
+    for(key in recipients['to']){
+        query = query + 'to=' +(recipients['to'][key])+'&';  
+    }
+    if(recipients['cc'] && recipients['cc'].length >0){
+        query = query + '&';
+        for(key in recipients['cc']){
+            query = query + 'cc=' +(recipients['cc'][key])+'&';  
+        }
+    }
+    if(recipients['cc'] && recipients['bcc'].length >0){
+        query = query + '&';
+        for(key in recipients['bcc']){
+            query = query + 'bcc=' +(recipients['bcc'][key])+'&';  
+        }
+    }
+    
+    if (type == 'html') {
+        query = query + '&html='+encodeURIComponent(content);
+    } else if (type == 'text') {
+        query = query + '&text='+encodeURIComponent(content);
+    } else {
+      throw new Error('Wrong email type');
+  }
+    
+    console.log(query);
+    var body = query;
+    
+  /*if (type == 'html') {
       var body = querystring.stringify({
         from: from,
         // Handle many destinations
-        to: recipients['to'].join(', '),
-        cc: recipients['cc'].join(', '),
-        bcc: recipients['bcc'].join(', '),
+        recipients,
         subject: subject,
         html: content
       });
@@ -38,16 +65,14 @@ Mailjet.prototype.sendContent = function(from, to, subject, type, content) {
       var body = querystring.stringify({
         from: from,
         // Handle many destinations
-        to: recipients['to'].join(', '),
-        cc: recipients['cc'].join(', '),
-        bcc: recipients['bcc'].join(', '),
+        to
         subject: subject,
         text: content
       });
   }
   else {
       throw new Error('Wrong email type');
-  }
+  }*/
 
   var options = {
     hostname: 'api.mailjet.com',
