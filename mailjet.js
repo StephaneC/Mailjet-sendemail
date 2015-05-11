@@ -13,7 +13,7 @@ var Mailjet = function(apiKey, secretKey) {
 Mailjet.prototype = {};
 
 // Email sending code
-Mailjet.prototype.sendContent = function(from, to, subject, type, content) {
+Mailjet.prototype.sendContent = function(from, to, subject, type, content, trackOpen, trackClick) {
 
     if (typeof(to) === 'string') {
         to = [to];
@@ -40,6 +40,16 @@ Mailjet.prototype.sendContent = function(from, to, subject, type, content) {
     }
     else {
         query += '&html=' + encodeURIComponent(content);
+    }
+
+    if(null !== trackOpen && undefined !== trackOpen) {
+        query += '&mj-trackopen=';
+        query += trackOpen ? 'true' : 'false';
+    }
+
+    if(null !== trackClick && undefined !== trackClick) {
+        query += '&mj-trackclick=';
+        query += trackClick ? 'true' : 'false';
     }
 
     console.log(query);
